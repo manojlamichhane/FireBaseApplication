@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React from 'react';
-import {useState} from 'react/cjs/react.development';
+import React, {useEffect, useState} from 'react';
+
 import AuthContext from '../contexts/AuthContext';
 
 const BASE_URL = 'https://rnauth-c47b2-default-rtdb.firebaseio.com';
@@ -17,6 +17,25 @@ const AuthProvider = props => {
   const [fireboxTodos, setFireboxTodos] = useState([]);
   const [authUser, setAuthUser] = useState({});
 
+  const [messages, setMessage] = useState([]);
+
+  useEffect(async () => {
+    setAuthenticating(true);
+    try {
+      // const auth = await AsyncStorage.getItem('authenticated');
+      // console.log(auth);
+      // if (!auth) {
+      //   setAuthenticated(false);
+      // } else {
+      //   setAuthenticated(true);
+      //   setAuthUser(JSON.parse(auth));
+      // }
+      // this.setAuthenticating(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
   const signUpUserToFirebase = async user => {
     try {
       const resp = await axios.post(`${BASE_URL}/users.json`, user);
@@ -25,19 +44,22 @@ const AuthProvider = props => {
     }
   };
 
-  const deleteTodo = async value => {
+  const deleteTodo = async (value1, value2) => {
     try {
-      await axios.delete(`${BASE_URL}/todos/${value}/.json`);
+      await axios.delete(`${BASE_URL}/todos/${value2}/${value1}/.json`);
     } catch (e) {
       console.log(e);
     }
   };
 
-  const markAsComplete = async value => {
+  const markAsComplete = async (value1, value2) => {
     try {
-      const reponse = await axios.patch(`${BASE_URL}/todos/${value}/.json`, {
-        isComplete: true,
-      });
+      const reponse = await axios.patch(
+        `${BASE_URL}/todos/${value2}/${value1}/.json`,
+        {
+          isComplete: true,
+        },
+      );
     } catch (e) {
       console.log(e);
     }
@@ -49,7 +71,7 @@ const AuthProvider = props => {
         `${BASE_URL}/users/${value}/name/.json`,
       );
       console.log(userResponse);
-      // return response;
+      return userResponse;
     } catch (e) {
       console.log(e);
     }
@@ -60,6 +82,7 @@ const AuthProvider = props => {
       const resp = await axios.post(`${BASE_URL}/posts.json`, {
         ...value,
         userId: authUser.id,
+        userName: authUser.name,
       });
     } catch (e) {
       console.log(e);
@@ -68,7 +91,7 @@ const AuthProvider = props => {
 
   const addTodos = async value => {
     try {
-      const resp = await axios.post(`${BASE_URL}/todos/${authUser.id}.json`, {
+      await axios.post(`${BASE_URL}/todos/${authUser.id}.json`, {
         ...value,
         userId: authUser.id,
         isComplete: false,
@@ -83,16 +106,12 @@ const AuthProvider = props => {
       const response = await axios.get(`${BASE_URL}/posts.json`);
       const postsId = Object.keys(response.data);
       const posts = postsId.map(postId => {
-        // console.log(response.data[postId].userId);
-        // console.log(fetchUser(response.data[postId]));
-        // const poster = fetchUser(response.data[postId].userId);
         return {
           ...response.data[postId],
           postId: postId,
-          // poster: poster,
         };
       });
-      console.log(posts);
+
       setFireboxPosts(posts);
     } catch (e) {
       console.log(e);
@@ -152,6 +171,7 @@ const AuthProvider = props => {
   return (
     <AuthContext.Provider
       value={{
+        isAuthenticating,
         isAuthenticated,
         Allusers: users,
         authUser,

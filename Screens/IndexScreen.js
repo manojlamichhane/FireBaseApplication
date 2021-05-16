@@ -3,20 +3,21 @@ import {
   Dimensions,
   View,
   StyleSheet,
-  FlatList,
   Text,
   ScrollView,
+  Image,
+  Pressable,
 } from 'react-native';
 import {Colors} from '../constants';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/EvilIcons';
 import {Modal, TextInput, Button} from 'react-native-paper';
 import AuthContext from '../store/contexts/AuthContext';
-import axios from 'axios';
 
 const IndexScreen = props => {
   var d = new Date();
   const authContext = useContext(AuthContext);
   const [post, setPost] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [isVisible, setIsVisible] = useState(false);
 
   const openPost = () => {
@@ -29,100 +30,140 @@ const IndexScreen = props => {
     setPost('');
   };
 
-  const afterPost = value => {
-    setIsVisible(false);
-    authContext.addPosts({value, d});
-    authContext.getPosts();
+  const afterPost = async value => {
+    try {
+      setIsVisible(false);
+      console.log(value);
+      await authContext.addPosts({...value, d});
+      authContext.getPosts();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(async () => {
-    await authContext.getPosts();
-    console.log(authContext.fireboxPosts);
+    try {
+      await authContext.getPosts();
+    } catch (e) {
+      console.log(e);
+    }
   }, []);
 
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <Pressable onPress={openPost}>
+          <View
+            style={{
+              height: 100,
+              backgroundColor: 'white',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 10,
+            }}>
+            <Text>What's on your mind?</Text>
+          </View>
+        </Pressable>
+
         {authContext.fireboxPosts?.map(item => (
           <View
             key={item.postId}
             style={{
               backgroundColor: 'white',
-              height: Dimensions.get('window').height / 5,
-              width: Dimensions.get('window').width * 0.82,
-              borderRadius: 20,
-              padding: 20,
-              marginBottom: 20,
+              height: Dimensions.get('window').height / 1.8,
+              width: Dimensions.get('window').width,
+              padding: 10,
+              marginBottom: 10,
             }}>
-            {/* {console.log(authContext.fetchUser(item.userId))} */}
-
-            <Text style={{fontWeight: 'bold', fontSize: 20}}>{item.post}</Text>
-            <Text style={{fontSize: 20}}>{item.d}</Text>
-            <Text style={{fontSize: 20}}>Posted by:{item.userId}</Text>
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                style={{width: 50, height: 50, borderRadius: 25}}
+                source={{
+                  uri:
+                    'https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png',
+                }}
+              />
+              <View style={{paddingLeft: 10}}>
+                <Text style={{fontWeight: 'bold', fontSize: 20}}>
+                  {item.userName}
+                </Text>
+                <Text style={{fontSize: 20, color: '#aeb4b7'}}>
+                  {item.d.slice(0, 10)}
+                </Text>
+              </View>
+            </View>
+            <Text style={{fontSize: 20}}>{item.post}</Text>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Image
+                style={{
+                  width: Dimensions.get('window').width,
+                  height: Dimensions.get('window').height / 3,
+                }}
+                source={{uri: item.imageUrl}}
+              />
+            </View>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View style={styles.response}>
+                <Icon name="like" size={28} color="black" />
+              </View>
+              <View style={styles.response}>
+                <Icon name="comment" size={28} color="black" />
+              </View>
+            </View>
           </View>
         ))}
       </ScrollView>
 
-      {/* <FlatList
-        data={authContext.fireboxPosts}
-        keyExtractor={item => item.postId}
-        renderItem={({item}) => {
-          <View
-            style={{
-              backgroundColor: 'white',
-              height: Dimensions.get('window').height / 5,
-              width: Dimensions.get('window').width * 0.82,
-              borderRadius: 20,
-              padding: 20,
-            }}>
-            <Text>{item.post}</Text>;
-          </View>;
-        }}
-      /> */}
-
       <Modal visible={isVisible}>
-        <Text>{post}</Text>
-        <View style={styles.todosForm}>
-          <Text style={{fontWeight: 'bold', fontSize: 30}}>Create Post</Text>
-          <TextInput
-            multiline
-            style={{marginTop: 30, height: 100}}
-            numberOflines={5}
-            label="What's on your mind?"
-            value={post}
-            onChangeText={text => setPost(text)}
-          />
-          <Button mode="outlined" onPress={() => console.log('Pressed')}>
-            Add Photos
-          </Button>
-          <View style={{marginTop: 80}}>
-            <Button
-              style={{backgroundColor: Colors.primary}}
-              color="white"
-              mode="outlined"
-              onPress={() => afterPost(post)}>
-              Share Post
-            </Button>
-            <Button mode="outlined" onPress={closePost}>
-              Cancel
-            </Button>
+        <ScrollView>
+          <View style={styles.todosForm}>
+            <View
+              style={{
+                marginTop: 20,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <Icon
+                onPress={closePost}
+                name="arrow-left"
+                size={38}
+                color="black"
+              />
+              <Button
+                color="black"
+                mode="text"
+                onPress={() => afterPost({post, imageUrl})}>
+                Post
+              </Button>
+            </View>
+            <TextInput
+              multiline
+              style={{marginTop: 30, height: 100}}
+              numberOflines={5}
+              label="What's on your mind?"
+              value={post}
+              onChangeText={text => setPost(text)}
+            />
+            <TextInput
+              style={{marginTop: 10, height: 50}}
+              label="Image Address"
+              value={imageUrl}
+              onChangeText={text => setImageUrl(text)}
+            />
+            <View style={{marginTop: 80}}>
+              <Button
+                style={{backgroundColor: Colors.primary}}
+                color="white"
+                mode="outlined"
+                onPress={() => afterPost({post, imageUrl})}>
+                Share Post
+              </Button>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </Modal>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 40,
-          right: 40,
-          width: 50,
-          height: 50,
-          backgroundColor: 'white',
-          borderRadius: 25,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Icon onPress={openPost} name="plus" size={30} color={Colors.primary} />
-      </View>
     </View>
   );
 };
@@ -130,16 +171,23 @@ const IndexScreen = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primary,
-    padding: 30,
+    backgroundColor: '#aeb4b7',
+    paddingVertical: 10,
   },
   todosForm: {
-    borderRadius: 20,
-    margin: 30,
     backgroundColor: 'white',
-    width: Dimensions.get('window').width * 0.82,
-    height: Dimensions.get('window').height * 0.6,
-    padding: 20,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    padding: 5,
+  },
+  response: {
+    backgroundColor: '#e4e6e7',
+    width: 150,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
   },
 });
 export default IndexScreen;

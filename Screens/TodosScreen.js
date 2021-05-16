@@ -9,6 +9,7 @@ const TodosScreen = () => {
   var d = new Date();
   const authContext = useContext(AuthContext);
   const [post, setPost] = useState('');
+  const [desc, setDesc] = useState('');
   const [isVisible, setIsVisible] = useState(false);
 
   const openTodo = () => {
@@ -21,25 +22,37 @@ const TodosScreen = () => {
     setPost('');
   };
 
-  const deleteTodo = value => {
-    authContext.deleteTodo(value);
-    authContext.getTodosFromFirebase();
+  const deleteTodos = async (value1, value2) => {
+    try {
+      await authContext.deleteTodo(value1, value2);
+      await authContext.getTodosFromFirebase();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const markCompleted = value => {
-    authContext.markAsComplete(value);
-    authContext.getTodosFromFirebase();
+  const markCompleted = async (value1, value2) => {
+    try {
+      await authContext.markAsComplete(value1, value2);
+      await authContext.getTodosFromFirebase();
+    } catch (e) {
+      console.log(e);
+    }
   };
-  const afterPost = value => {
-    setIsVisible(false);
-    authContext.addTodos({value, d});
-    authContext.getTodosFromFirebase();
+  const afterPost = async value => {
+    try {
+      setIsVisible(false);
+      await authContext.addTodos({...value, d});
+      await authContext.getTodosFromFirebase();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(async () => {
     await authContext.getTodosFromFirebase();
   }, []);
-  console.log(authContext.fireboxTodos);
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -48,24 +61,36 @@ const TodosScreen = () => {
             key={item.id}
             style={{
               ...styles.todoDetails,
-              backgroundColor: item.isComplete ? 'green' : '#f7d703',
+              backgroundColor: item.isComplete ? '#3bc0b2' : '#f7d703',
             }}>
-            <View style={{position: 'absolute', right: 10, top: 5}}>
-              <Icon
-                name="delete"
-                size={30}
-                onPress={() => deleteTodo(item.id)}
-                color="white"
-              />
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View>
+                <Text
+                  style={{fontWeight: 'bold', fontSize: 20, color: 'white'}}>
+                  {item.post}
+                </Text>
+                <Text style={{fontSize: 15, color: 'white'}}>{item.desc}</Text>
+                <Text style={{fontSize: 15, color: 'white'}}>
+                  {item.d.slice(0, 10)}
+                </Text>
+              </View>
+              <View>
+                <Icon
+                  name="delete"
+                  onPress={() => deleteTodos(item.id, item.userId)}
+                  size={30}
+                  color="white"
+                />
+              </View>
             </View>
-            <Text style={{fontWeight: 'bold', fontSize: 20}}>{item.value}</Text>
-            <Text style={{fontSize: 20}}>{item.d}</Text>
+
             {item.isComplete ? null : (
               <Button
-                style={{backgroundColor: Colors.primary}}
+                style={{backgroundColor: Colors.primary, marginTop: 15}}
                 color="white"
                 mode="outlined"
-                onPress={() => markCompleted(item.id)}>
+                onPress={() => markCompleted(item.id, item.userId)}>
                 Mark as Complete
               </Button>
             )}
@@ -77,12 +102,18 @@ const TodosScreen = () => {
         <View style={styles.todosForm}>
           <Text style={{fontWeight: 'bold', fontSize: 30}}>Create Todo</Text>
           <TextInput
-            multiline
-            style={{marginTop: 30, height: 100}}
-            numberOflines={5}
-            label="What's on your mind?"
+            style={{marginTop: 30, height: 60}}
+            label="Todo title"
             value={post}
             onChangeText={text => setPost(text)}
+          />
+          <TextInput
+            multiline
+            style={{marginTop: 10, height: 100}}
+            numberOflines={5}
+            label="Todo Description"
+            value={desc}
+            onChangeText={text => setDesc(text)}
           />
 
           <View style={{marginTop: 80}}>
@@ -90,7 +121,7 @@ const TodosScreen = () => {
               style={{backgroundColor: Colors.primary}}
               color="white"
               mode="outlined"
-              onPress={() => afterPost(post)}>
+              onPress={() => afterPost({post, desc})}>
               Add Todo
             </Button>
             <Button mode="outlined" onPress={closeTodo}>
@@ -119,7 +150,7 @@ const TodosScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primary,
+    backgroundColor: 'white',
     padding: 30,
   },
   todosForm: {
@@ -132,7 +163,7 @@ const styles = StyleSheet.create({
   },
   todoDetails: {
     // backgroundColor: 'white',
-    height: Dimensions.get('window').height / 5,
+    height: Dimensions.get('window').height / 4.5,
     width: Dimensions.get('window').width * 0.82,
     borderRadius: 20,
     padding: 20,

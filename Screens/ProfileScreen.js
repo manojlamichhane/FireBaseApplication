@@ -1,5 +1,4 @@
-import React, {useContext} from 'react';
-import {WebView} from 'react-native-webview';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   Text,
   Image,
@@ -9,20 +8,32 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Colors} from '../constants';
 import AuthContext from '../store/contexts/AuthContext';
 import {Button} from 'react-native-paper';
+import MyWeb from './MyWeb';
+import {useNavigation} from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const authContext = useContext(AuthContext);
   const profile = authContext.authUser;
-
+  const [web, setWeb] = useState(false);
   const navigation = useNavigation();
+
+  const openWebView = () => {
+    setWeb(true);
+  };
+  if (web) {
+    return <MyWeb />;
+  }
+
+  const closeWebView = () => {
+    setWeb(false);
+  };
+
   const LogOut = () => {
     authContext.logout();
-    // navigation.navigate('Login');
   };
 
   return (
@@ -62,7 +73,7 @@ const ProfileScreen = () => {
                   alignItems: 'center',
                 }}>
                 <Icon
-                  onPress={() => console.log('edit pressed')}
+                  onPress={() => navigation.navigate('Edit')}
                   name="edit"
                   size={20}
                   color={Colors.primary}
@@ -75,22 +86,9 @@ const ProfileScreen = () => {
                 style={{backgroundColor: 'white', marginBottom: 20}}
                 color={Colors.primary}
                 mode="outlined"
-                onPress={() => (
-                  <WebView
-                    source={{
-                      uri: 'https://github.com/manojlamichhane/reactnative.git',
-                    }}
-                  />
-                )}>
+                onPress={openWebView}>
                 GITHUB link
               </Button>
-              {/* <Button
-                style={{backgroundColor: 'white', marginBottom: 20}}
-                color={Colors.primary}
-                mode="outlined"
-                onPress={navigation.navigate('MyPosts')}>
-                View My Posts
-              </Button> */}
               <Button
                 style={{backgroundColor: 'white'}}
                 icon="logout"
@@ -101,6 +99,7 @@ const ProfileScreen = () => {
               </Button>
             </View>
           </ScrollView>
+          {web && <MyWeb />}
         </View>
       </View>
     </SafeAreaView>

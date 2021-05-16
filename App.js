@@ -7,7 +7,8 @@ import AuthProvider from './store/providers/AuthProvider';
 import AuthContext from './store/contexts/AuthContext';
 import AuthNavigation from './navigation/AuthNavigation';
 import HomeNavigation from './navigation/HomeNavigation';
-import SplashScreen from './Screens/SplashScreen';
+
+import MyWeb from './Screens/MyWeb';
 
 const theme = {
   ...DefaultTheme,
@@ -24,9 +25,6 @@ const App = () => {
         <NavigationContainer>
           <AuthContext.Consumer>
             {context => {
-              if (context.isAuthenticating) {
-                return <SplashScreen />;
-              }
               return context.isAuthenticated ? (
                 <HomeNavigation />
               ) : (

@@ -5,6 +5,8 @@ import ProfileScreen from '../Screens/ProfileScreen';
 import TodosScreen from '../Screens/TodosScreen';
 import IndexScreen from '../Screens/IndexScreen';
 import MyPostsScreen from '../Screens/MyPostsScreen';
+import ChatNavigation from './ChatNavigation';
+import ChatScreen from '../Screens/ChatScreen';
 
 const HomeNavigation = () => {
   const HomeTab = createBottomTabNavigator();
@@ -43,6 +45,15 @@ const HomeNavigation = () => {
         options={() => ({
           tabBarIcon: ({color}) => (
             <Icon name="location" size={30} color={color} />
+          ),
+        })}
+      />
+      <HomeTab.Screen
+        name="chat"
+        component={ChatNavigation}
+        options={() => ({
+          tabBarIcon: ({color}) => (
+            <Icon name="chatbox-outline" size={30} color={color} />
           ),
         })}
       />
