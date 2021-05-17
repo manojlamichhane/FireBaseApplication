@@ -12,6 +12,7 @@ import {Colors} from '../constants';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import {Modal, TextInput, Button} from 'react-native-paper';
 import AuthContext from '../store/contexts/AuthContext';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 const IndexScreen = props => {
   var d = new Date();
@@ -19,6 +20,7 @@ const IndexScreen = props => {
   const [post, setPost] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [isVisible, setIsVisible] = useState(false);
+  const [img, setImg] = useState({});
 
   const openPost = () => {
     setIsVisible(true);
@@ -33,12 +35,14 @@ const IndexScreen = props => {
   const afterPost = async value => {
     try {
       setIsVisible(false);
-      console.log(value);
       await authContext.addPosts({...value, d});
       authContext.getPosts();
     } catch (e) {
       console.log(e);
     }
+  };
+  const pickImage = () => {
+    launchImageLibrary({quality: 1}, response => setImg(response));
   };
 
   useEffect(async () => {
@@ -146,18 +150,26 @@ const IndexScreen = props => {
               value={post}
               onChangeText={text => setPost(text)}
             />
-            <TextInput
-              style={{marginTop: 10, height: 50}}
-              label="Image Address"
-              value={imageUrl}
-              onChangeText={text => setImageUrl(text)}
-            />
+            {img == '' ? null : (
+              <Image
+                style={{marginTop: 20, width: '100%', height: 200}}
+                source={{uri: img.uri}}
+              />
+            )}
+            <Button
+              style={{backgroundColor: Colors.primary}}
+              color="white"
+              mode="text"
+              onPress={pickImage}>
+              Choose Image
+            </Button>
+
             <View style={{marginTop: 80}}>
               <Button
                 style={{backgroundColor: Colors.primary}}
                 color="white"
                 mode="outlined"
-                onPress={() => afterPost({post, imageUrl})}>
+                onPress={() => afterPost({post, ...img})}>
                 Share Post
               </Button>
             </View>

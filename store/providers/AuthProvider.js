@@ -1,13 +1,12 @@
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
-
+import storage from '@react-native-firebase/storage';
 import AuthContext from '../contexts/AuthContext';
 
 const BASE_URL = 'https://rnauth-c47b2-default-rtdb.firebaseio.com';
 
 const AuthProvider = props => {
   const [isAuthenticated, setAuthenticated] = useState(false);
-  const [isAuthenticating, setAuthenticating] = useState(false);
 
   const [users, setUsers] = useState([]);
 
@@ -17,10 +16,8 @@ const AuthProvider = props => {
   const [fireboxTodos, setFireboxTodos] = useState([]);
   const [authUser, setAuthUser] = useState({});
 
-  const [messages, setMessage] = useState([]);
-
   useEffect(async () => {
-    setAuthenticating(true);
+    // setAuthenticating(true);
     try {
       // const auth = await AsyncStorage.getItem('authenticated');
       // console.log(auth);
@@ -79,8 +76,14 @@ const AuthProvider = props => {
 
   const addPosts = async value => {
     try {
+      console.log(value);
+      const reference = storage().ref(`/photos/${value.fileName}`);
+      await reference.putFile(value.uri);
+      const url = await reference.getDownloadURL();
       const resp = await axios.post(`${BASE_URL}/posts.json`, {
-        ...value,
+        d: value.d,
+        post: value.post,
+        imageUrl: url,
         userId: authUser.id,
         userName: authUser.name,
       });
@@ -116,10 +119,6 @@ const AuthProvider = props => {
     } catch (e) {
       console.log(e);
     }
-  };
-
-  const setSplash = value => {
-    setAuthenticating(value);
   };
 
   const setTrue = () => {
@@ -171,7 +170,6 @@ const AuthProvider = props => {
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticating,
         isAuthenticated,
         Allusers: users,
         authUser,
@@ -184,7 +182,6 @@ const AuthProvider = props => {
         fetchUser,
         getPosts,
         addPosts,
-        setSplash,
         logout,
         setAuthenticatedUser,
         setTrue,

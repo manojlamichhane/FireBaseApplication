@@ -3,7 +3,7 @@ import {Text, View, Image, StyleSheet, ScrollView} from 'react-native';
 import {Colors} from '../constants';
 import {TextInput, Button} from 'react-native-paper';
 import AuthContext from '../store/contexts/AuthContext';
-import AsyncStorage from '@react-native-community/async-storage';
+// import AsyncStorage from '@react-native-community/async-storage';
 
 const LoginScreen = props => {
   const authContext = useContext(AuthContext);
@@ -18,7 +18,6 @@ const LoginScreen = props => {
     const authUser = await (authContext.Allusers &&
       authContext.Allusers.find(user => user.email == email));
     if (authUser == null) {
-      authContext.setSplash(true);
       setEmailError('Email not registered');
     } else {
       setEmailError('');
@@ -29,7 +28,6 @@ const LoginScreen = props => {
           ? authUser.password == password
             ? (setEmailError(''),
               setPasswordError(''),
-              authContext.setSplash(false),
               console.log('Login succesfull'),
               authContext.setTrue(),
               authContext.setAuthenticatedUser(authUser))
