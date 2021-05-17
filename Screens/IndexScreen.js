@@ -10,9 +10,10 @@ import {
 } from 'react-native';
 import {Colors} from '../constants';
 import Icon from 'react-native-vector-icons/EvilIcons';
+import MenuIcon from 'react-native-vector-icons/Ionicons';
 import {Modal, TextInput, Button} from 'react-native-paper';
 import AuthContext from '../store/contexts/AuthContext';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 const IndexScreen = props => {
   var d = new Date();
@@ -56,6 +57,44 @@ const IndexScreen = props => {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          style={{
+            width: '100%',
+            height: 55,
+            backgroundColor: 'white',
+            paddingHorizontal: 5,
+            marginVertical: 5,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <Image
+            style={{width: 40, height: 40, borderRadius: 20}}
+            source={{
+              uri:
+                'https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png',
+            }}
+          />
+          <View
+            style={{
+              width: '70%',
+              height: 50,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: '#e4e6e7',
+              borderRadius: 25,
+            }}>
+            <Text style={{color: 'black', fontSize: 18}}>
+              {authContext.authUser.name}
+            </Text>
+          </View>
+          <MenuIcon
+            onPress={() => props.navigation.toggleDrawer()}
+            name="menu"
+            size={46}
+            color="black"
+          />
+        </View>
         <Pressable onPress={openPost}>
           <View
             style={{

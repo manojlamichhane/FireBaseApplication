@@ -15,11 +15,11 @@ import {Button} from 'react-native-paper';
 import MyWeb from './MyWeb';
 import {useNavigation} from '@react-navigation/native';
 
-const ProfileScreen = () => {
+const ProfileScreen = props => {
   const authContext = useContext(AuthContext);
   const profile = authContext.authUser;
   const [web, setWeb] = useState(false);
-  const navigation = useNavigation();
+  const navigation = props.navigation;
 
   const openWebView = () => {
     setWeb(true);
@@ -41,7 +41,7 @@ const ProfileScreen = () => {
       <View style={{height: Dimensions.get('window').height}}>
         <Image
           style={{
-            width: Dimensions.get('window').width,
+            width: Dimensions.get('window').width * 0.78,
             height: Dimensions.get('window').height * 0.4,
           }}
           source={{
@@ -56,7 +56,7 @@ const ProfileScreen = () => {
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <View>
                 <Text
-                  style={{color: 'white', fontWeight: 'bold', fontSize: 25}}>
+                  style={{color: 'white', fontWeight: 'bold', fontSize: 20}}>
                   {profile.name}
                 </Text>
                 <Text style={{color: 'white', fontSize: 15}}>
@@ -81,7 +81,7 @@ const ProfileScreen = () => {
               </View>
             </View>
 
-            <View style={{marginTop: 110}}>
+            <View style={{marginTop: 220}}>
               <Button
                 style={{backgroundColor: 'white', marginBottom: 20}}
                 color={Colors.primary}

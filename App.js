@@ -9,6 +9,7 @@ import AuthNavigation from './navigation/AuthNavigation';
 import HomeNavigation from './navigation/HomeNavigation';
 
 import MyWeb from './Screens/MyWeb';
+import DrawerNavigation from './navigation/DrawerNavigation';
 
 const theme = {
   ...DefaultTheme,
@@ -26,8 +27,9 @@ const App = () => {
           <AuthContext.Consumer>
             {context => {
               return context.isAuthenticated ? (
-                <HomeNavigation />
+                <DrawerNavigation />
               ) : (
+                // <HomeNavigation />
                 <AuthNavigation />
               );
             }}

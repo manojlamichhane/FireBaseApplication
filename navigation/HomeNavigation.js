@@ -12,7 +12,7 @@ const HomeNavigation = () => {
   const HomeTab = createBottomTabNavigator();
   return (
     <HomeTab.Navigator>
-      <HomeTab.Screen
+      {/* <HomeTab.Screen
         name="Profile"
         component={ProfileScreen}
         options={() => ({
@@ -20,7 +20,7 @@ const HomeNavigation = () => {
             <Icon name="person" size={30} color={color} />
           ),
         })}
-      />
+      /> */}
       <HomeTab.Screen
         name="Index"
         component={IndexScreen}
