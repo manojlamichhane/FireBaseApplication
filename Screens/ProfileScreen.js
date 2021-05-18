@@ -7,30 +7,18 @@ import {
   View,
   StyleSheet,
   ScrollView,
+  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Colors} from '../constants';
 import AuthContext from '../store/contexts/AuthContext';
-import {Button} from 'react-native-paper';
-import MyWeb from './MyWeb';
-import {useNavigation} from '@react-navigation/native';
+import {Modal, Button} from 'react-native-paper';
 
 const ProfileScreen = props => {
   const authContext = useContext(AuthContext);
   const profile = authContext.authUser;
-  const [web, setWeb] = useState(false);
   const navigation = props.navigation;
-
-  const openWebView = () => {
-    setWeb(true);
-  };
-  if (web) {
-    return <MyWeb />;
-  }
-
-  const closeWebView = () => {
-    setWeb(false);
-  };
+  const [visible, setVisible] = useState(false);
 
   const LogOut = () => {
     authContext.logout();
@@ -41,7 +29,7 @@ const ProfileScreen = props => {
       <View style={{height: Dimensions.get('window').height}}>
         <Image
           style={{
-            width: Dimensions.get('window').width * 0.78,
+            width: Dimensions.get('window').width * 0.774,
             height: Dimensions.get('window').height * 0.4,
           }}
           source={{
@@ -80,13 +68,24 @@ const ProfileScreen = props => {
                 />
               </View>
             </View>
-
-            <View style={{marginTop: 220}}>
+            <View style={{marginTop: 150}}>
               <Button
                 style={{backgroundColor: 'white', marginBottom: 20}}
                 color={Colors.primary}
                 mode="outlined"
-                onPress={openWebView}>
+                onPress={() => setVisible(true)}>
+                About
+              </Button>
+
+              <Button
+                style={{backgroundColor: 'white', marginBottom: 20}}
+                color={Colors.primary}
+                mode="outlined"
+                onPress={() => {
+                  Linking.openURL(
+                    'https://github.com/manojlamichhane/FireBaseApplication',
+                  );
+                }}>
                 GITHUB link
               </Button>
               <Button
@@ -99,8 +98,40 @@ const ProfileScreen = props => {
               </Button>
             </View>
           </ScrollView>
-          {web && <MyWeb />}
         </View>
+        <Modal
+          visible={visible}
+          style={{backgroundColor: 'white', padding: 10}}>
+          <Text>This app contains 3 major parts</Text>
+          <Text>1. Login and Signup</Text>
+          <Text>2. Posts</Text>
+          <Text>3. Todos</Text>
+          <Text>
+            1. Login and Signup : Login and Signup with form validation. In
+            signup user is added to the realtime database using firebase. Once
+            logged in user is directed to indexscrenn with posts
+          </Text>
+          <Text>
+            2. Posts : Post is created with post detail and image. Image is
+            uploaded using image picker and the whole post is added to realtime
+            database using firebase.
+          </Text>
+          <Text>
+            3. Todos : Todos with title and description is added to the realtime
+            database using firebase. CRUD operation is done by updating the
+            completed status and the whole todos can be deleted.
+          </Text>
+          <Text>
+            Beside these chat UI is used and date is used in posts and toods.
+          </Text>
+          <Button
+            style={{backgroundColor: 'white', marginBottom: 20}}
+            color={Colors.primary}
+            mode="outlined"
+            onPress={() => setVisible(false)}>
+            Close
+          </Button>
+        </Modal>
       </View>
     </SafeAreaView>
   );

@@ -116,7 +116,7 @@ const TodosScreen = () => {
             onChangeText={text => setDesc(text)}
           />
 
-          <View style={{marginTop: 80}}>
+          <View style={{marginTop: 60}}>
             <Button
               style={{backgroundColor: Colors.primary}}
               color="white"

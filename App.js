@@ -6,9 +6,6 @@ import {Colors} from './constants';
 import AuthProvider from './store/providers/AuthProvider';
 import AuthContext from './store/contexts/AuthContext';
 import AuthNavigation from './navigation/AuthNavigation';
-import HomeNavigation from './navigation/HomeNavigation';
-
-import MyWeb from './Screens/MyWeb';
 import DrawerNavigation from './navigation/DrawerNavigation';
 
 const theme = {

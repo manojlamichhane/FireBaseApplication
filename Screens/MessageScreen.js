@@ -6,9 +6,7 @@ import {Colors} from '../constants';
 import AuthContext from '../store/contexts/AuthContext';
 
 const MessageScreen = props => {
-  const [users, setUsers] = useState([]);
   const [user, setUser] = useState({});
-  const [userId, setUserId] = useState();
   const [sender, setSender] = useState({});
   let authcontext = useContext(AuthContext);
 
@@ -16,19 +14,18 @@ const MessageScreen = props => {
 
   useEffect(async () => {
     try {
-      await setUserId(props.route.params.id);
+      const userId = props.route.params.id;
       await authcontext.getUsersFromFireBase();
       const response = await authcontext.Allusers?.find(
         item => item.id === userId,
       );
-      await setUser(response);
+      console.log('resp', response);
+      setUser(response);
       await setSender(authcontext.authUser);
-      console.log('sender', authcontext.authUser);
-      console.log('reciever', user);
     } catch (e) {
       console.log(e);
     }
-  }, [authcontext.Allusers]);
+  }, []);
 
   return (
     <View>

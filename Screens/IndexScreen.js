@@ -177,7 +177,7 @@ const IndexScreen = props => {
               <Button
                 color="black"
                 mode="text"
-                onPress={() => afterPost({post, imageUrl})}>
+                onPress={() => afterPost({post, ...img})}>
                 Post
               </Button>
             </View>

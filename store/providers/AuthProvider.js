@@ -114,7 +114,6 @@ const AuthProvider = props => {
           postId: postId,
         };
       });
-
       setFireboxPosts(posts);
     } catch (e) {
       console.log(e);
