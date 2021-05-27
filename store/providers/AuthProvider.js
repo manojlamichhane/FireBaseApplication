@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import storage from '@react-native-firebase/storage';
 import AuthContext from '../contexts/AuthContext';
-
 const BASE_URL = 'https://rnauth-c47b2-default-rtdb.firebaseio.com';
 
 const AuthProvider = props => {
@@ -16,26 +15,9 @@ const AuthProvider = props => {
   const [fireboxTodos, setFireboxTodos] = useState([]);
   const [authUser, setAuthUser] = useState({});
 
-  useEffect(async () => {
-    // setAuthenticating(true);
-    try {
-      // const auth = await AsyncStorage.getItem('authenticated');
-      // console.log(auth);
-      // if (!auth) {
-      //   setAuthenticated(false);
-      // } else {
-      //   setAuthenticated(true);
-      //   setAuthUser(JSON.parse(auth));
-      // }
-      // this.setAuthenticating(false);
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
-
   const signUpUserToFirebase = async user => {
     try {
-      const resp = await axios.post(`${BASE_URL}/users.json`, user);
+      await axios.post(`${BASE_URL}/users.json`, user);
     } catch (e) {
       console.log(e);
     }
@@ -51,12 +33,9 @@ const AuthProvider = props => {
 
   const markAsComplete = async (value1, value2) => {
     try {
-      const reponse = await axios.patch(
-        `${BASE_URL}/todos/${value2}/${value1}/.json`,
-        {
-          isComplete: true,
-        },
-      );
+      await axios.patch(`${BASE_URL}/todos/${value2}/${value1}/.json`, {
+        isComplete: true,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -80,7 +59,7 @@ const AuthProvider = props => {
       const reference = storage().ref(`/photos/${value.fileName}`);
       await reference.putFile(value.uri);
       const url = await reference.getDownloadURL();
-      const resp = await axios.post(`${BASE_URL}/posts.json`, {
+      await axios.post(`${BASE_URL}/posts.json`, {
         d: value.d,
         post: value.post,
         imageUrl: url,
@@ -120,10 +99,6 @@ const AuthProvider = props => {
     }
   };
 
-  const setTrue = () => {
-    setAuthenticated(true);
-  };
-
   const getTodosFromFirebase = async () => {
     try {
       const todoResponse = await axios.get(
@@ -158,12 +133,17 @@ const AuthProvider = props => {
     }
   };
 
-  const logout = () => {
-    setAuthUser({});
+  const logout = async () => {
+    await setAuthUser({});
     setAuthenticated(false);
   };
-  const setAuthenticatedUser = user => {
-    setAuthUser(user);
+  const setAuthenticatedUser = async user => {
+    try {
+      await setAuthUser(user);
+      setAuthenticated(true);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -183,7 +163,6 @@ const AuthProvider = props => {
         addPosts,
         logout,
         setAuthenticatedUser,
-        setTrue,
         signUpUserToFirebase,
         getUsersFromFireBase,
       }}>

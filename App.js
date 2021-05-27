@@ -26,7 +26,6 @@ const App = () => {
               return context.isAuthenticated ? (
                 <DrawerNavigation />
               ) : (
-                // <HomeNavigation />
                 <AuthNavigation />
               );
             }}

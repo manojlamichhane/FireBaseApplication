@@ -51,22 +51,6 @@ const ProfileScreen = props => {
                   {profile.email}
                 </Text>
               </View>
-              <View
-                style={{
-                  width: 30,
-                  height: 30,
-                  backgroundColor: 'white',
-                  borderRadius: 15,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Icon
-                  onPress={() => navigation.navigate('Edit')}
-                  name="edit"
-                  size={20}
-                  color={Colors.primary}
-                />
-              </View>
             </View>
             <View style={{marginTop: 150}}>
               <Button

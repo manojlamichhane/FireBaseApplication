@@ -3,7 +3,6 @@ import {Text, View, Image, StyleSheet, ScrollView} from 'react-native';
 import {Colors} from '../constants';
 import {TextInput, Button} from 'react-native-paper';
 import AuthContext from '../store/contexts/AuthContext';
-// import AsyncStorage from '@react-native-community/async-storage';
 
 const LoginScreen = props => {
   const authContext = useContext(AuthContext);
@@ -15,32 +14,34 @@ const LoginScreen = props => {
   const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   const Login = async ({email, password}) => {
-    const authUser = await (authContext.Allusers &&
-      authContext.Allusers.find(user => user.email == email));
-    if (authUser == null) {
-      setEmailError('Email not registered');
-    } else {
-      setEmailError('');
-      await (email == ''
-        ? setEmailError('Required')
-        : email.match(emailRegex)
-        ? authUser.email == email
-          ? authUser.password == password
-            ? (setEmailError(''),
-              setPasswordError(''),
-              console.log('Login succesfull'),
-              authContext.setTrue(),
-              authContext.setAuthenticatedUser(authUser))
-            : setPasswordError('Login failed')
-          : setEmailError('Email not registered')
-        : setEmailError('Invalid Email address'));
+    try {
+      const authUser = await (authContext.Allusers &&
+        authContext.Allusers.find(user => user.email == email));
+      if (authUser == null) {
+        setEmailError('Email not registered');
+      } else {
+        setEmailError('');
+        await (email == ''
+          ? setEmailError('Required')
+          : email.match(emailRegex)
+          ? authUser.email == email
+            ? authUser.password == password
+              ? (setEmailError(''),
+                setPasswordError(''),
+                console.log('Login succesfull'),
+                await authContext.setAuthenticatedUser(authUser))
+              : setPasswordError('Login failed')
+            : setEmailError('Email not registered')
+          : setEmailError('Invalid Email address'));
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(async () => {
     try {
       await authContext.getUsersFromFireBase();
-      // setReady(await AsyncStorage.getItem('ready'));
     } catch (e) {
       console.log(e);
     }
